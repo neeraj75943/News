@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container">
+  <div class="article-detail-container">
+    <div class="article-header">
+      <a href="javascript:history.back()" class="back-button">← Back</a>
+      <h1 class="article-title">{{ article.title }}</h1>
+      
+      <div class="article-meta">
+        <div class="meta-item">
+          <span class="meta-label">Source:</span>
+          <span class="meta-value">📰 {{ article.source_name }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Published:</span>
+          <span class="meta-value">📅 {{ article.pubDate }}</span>
+        </div>
+      </div>
+    </div>
+
+    {% if article.image_url %}
+      <div class="article-image">
+        <img src="{{ article.image_url }}" alt="Article Image" onerror="this.src='https://via.placeholder.com/800x400?text=Article+Image'">
+      </div>
+    {% else %}
+      <div class="article-image">
+        <img src="https://via.placeholder.com/800x400?text=Article+Image" alt="Article Image">
+      </div>
+    {% endif %}
+
+    <div class="article-content">
+      <h2 class="content-heading">Article Details</h2>
+      
+      <div class="article-body">
+        {{ article.description }}
+      </div>
+
+      <div class="source-info">
+        <h3>Source Information</h3>
+        <div class="source-details">
+          <p><strong>Source Name:</strong> {{ article.source_name }}</p>
+          <p><strong>Published Date:</strong> {{ article.pubDate }}</p>
+          {% if article.link and article.link != '#' %}
+            <p><strong>Read Original:</strong> <a href="{{ article.link }}" target="_blank" class="source-link">{{ article.link[:50] }}...</a></p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .article-detail-container {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+  }
+
+  .back-button:hover {
+    color: #764ba2;
+  }
+
+  .article-header {
+    margin-bottom: 30px;
+  }
+
+  .article-title {
+    color: #333;
+    font-weight: 700;
+    font-size: 2.2em;
+    line-height: 1.4;
+    margin: 20px 0;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 15px;
+  }
+
+  .article-meta {
+    display: flex;
+    gap: 40px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    background: #f5f7fa;
+    padding: 15px 20px;
+    border-radius: 8px;
+  }
+
+  .meta-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .meta-label {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+
+  .meta-value {
+    color: #333;
+    font-size: 0.95em;
+  }
+
+  .article-image {
+    width: 100%;
+    height: 400px;
+    margin: 30px 0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .article-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .article-content {
+    margin-top: 30px;
+  }
+
+  .content-heading {
+    color: #333;
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 10px;
+  }
+
+  .article-body {
+    color: #444;
+    font-size: 1.08em;
+    line-height: 1.95;
+    text-align: justify;
+    margin-bottom: 30px;
+    padding: 30px;
+    background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+    border-left: 6px solid #667eea;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+  }
+
+  .article-summary {
+    background: #f0f4ff;
+    padding: 25px;
+    border-radius: 8px;
+    margin: 30px 0;
+    border-left: 4px solid #764ba2;
+  }
+
+  .article-summary h3 {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 1.1em;
+  }
+
+  .article-summary p {
+    color: #555;
+    font-size: 1em;
+    line-height: 1.7;
+  }
+
+  .source-info {
+    background: linear-gradient(135deg, #e8f1ff 0%, #f0e8ff 100%);
+    padding: 25px;
+    border-radius: 8px;
+    margin-top: 30px;
+    border: 2px solid #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+  }
+
+  .source-info h3 {
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+  }
+
+  .source-details {
+    background: white;
+    padding: 20px;
+    border-radius: 6px;
+    border-left: 4px solid #764ba2;
+  }
+
+  .source-details p {
+    color: #555;
+    font-size: 0.95em;
+    margin: 8px 0;
+    line-height: 1.6;
+  }
+
+  .source-details strong {
+    color: #667eea;
+    font-weight: 600;
+  }
+
+  .source-link {
+    color: #667eea;
+    text-decoration: none;
+    word-break: break-all;
+    transition: color 0.3s ease;
+  }
+
+  .source-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .article-detail-container {
+      padding: 20px;
+    }
+
+    .article-title {
+      font-size: 1.6em;
+    }
+
+    .article-image {
+      height: 250px;
+    }
+
+    .article-body {
+      font-size: 1em;
+      padding: 15px;
+    }
+
+    .article-meta {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .meta-item {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock body %}

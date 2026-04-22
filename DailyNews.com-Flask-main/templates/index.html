@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block body %}
+<div class="container">
+  <h1>🏠 Latest News</h1>
+  <div class="news-grid">
+    {% for news in cases.articles %}
+    <div class="news-card">
+      <div class="card-image">
+        {% if news.image_url %}
+          <img src="{{news.image_url}}" alt="News Image" onerror="this.src='https://via.placeholder.com/400x250?text=News+Image'">
+        {% else %}
+          <img src="https://via.placeholder.com/400x250?text=News+Image" alt="News Image">
+        {% endif %}
+      </div>
+      <div class="card-content">
+        <h3 class="card-title">{{news.title}}</h3>
+        <div class="card-meta">
+          <span class="source-badge">📰 {{news.source_name}}</span>
+          <span class="date-badge">📅 {{news.pubDate}}</span>
+        </div>
+        <p class="card-description">
+          {% if news.description and news.description|length > 150 %}
+            {{ news.description[:150] }}...
+          {% else %}
+            {{ news.description }}
+          {% endif %}
+        </p>
+        <a href="/article/general/{{ loop.index0 }}" class="read-more-btn">Read More →</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+  }
+
+  .news-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .news-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-image {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #f0f0f0;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .news-card:hover .card-image img {
+    transform: scale(1.05);
+  }
+
+  .card-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-title {
+    color: #333;
+    font-weight: 700;
+    font-size: 1.1em;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .source-badge,
+  .date-badge {
+    font-size: 0.8em;
+    color: #667eea;
+    font-weight: 600;
+    background: #f0f4ff;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .card-description {
+    color: #666;
+    font-size: 0.9em;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .read-more-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9em;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+    align-self: flex-start;
+  }
+
+  .read-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    color: white;
+  }
+
+  @media (max-width: 768px) {
+    .news-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+</style>
+{% endblock body %}

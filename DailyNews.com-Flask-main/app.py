@@ -3,30 +3,46 @@ import requests
 from textblob import TextBlob
 from nltk.sentiment import SentimentIntensityAnalyzer
 import nltk
+import os
 
-# Download required NLTK data
+# Download required NLTK data with error handling for serverless
 try:
     nltk.data.find('sentiment/vader_lexicon')
 except LookupError:
-    nltk.download('vader_lexicon')
+    try:
+        nltk.download('vader_lexicon', quiet=True)
+    except Exception as e:
+        print(f"Warning: Could not download NLTK data: {e}")
 
 app = Flask(__name__)
 app.secret_key = 'secret123'
-sia = SentimentIntensityAnalyzer()
+
+# Initialize VADER sentiment analyzer with error handling
+try:
+    sia = SentimentIntensityAnalyzer()
+except Exception as e:
+    print(f"Warning: Could not initialize VADER: {e}")
+    sia = None
 
 # Global storage for articles by category
 articles_cache = {}
 API_KEY = 'pub_adafdf32f2444525b9772637f7776d0d'  # Get free key at https://newsdata.io/
 
 def get_sentiment(text):
-    """Analyze sentiment of text using VADER - returns positive/negative/neutral"""
+    """Analyze sentiment of text using VADER or TextBlob fallback"""
     if not text or len(text.strip()) == 0:
         return {'compound': 0, 'sentiment': 'neutral', 'score': 0}
     
     try:
-        # Use VADER for sentiment analysis
-        scores = sia.polarity_scores(text)
-        compound = scores['compound']
+        # Try VADER first
+        if sia is not None:
+            scores = sia.polarity_scores(text)
+            compound = scores['compound']
+        else:
+            # Fallback to TextBlob
+            blob = TextBlob(text)
+            compound = blob.sentiment.polarity
+            scores = {'compound': compound}
         
         # Classify sentiment based on compound score
         if compound >= 0.05:
@@ -102,56 +118,86 @@ def get_news(category):
 
 @app.route('/')
 def index():
-    articles = get_news('general')
-    articles_cache['general'] = articles
-    case = {
-        'articles': articles
-    }
-    return render_template('index.html',cases = case)
+    try:
+        articles = get_news('general')
+        articles_cache['general'] = articles
+        case = {
+            'articles': articles
+        }
+        return render_template('index.html',cases = case)
+    except Exception as e:
+        print(f"Error in index route: {e}")
+        return render_template('index.html', cases={'articles': []})
+
+@app.route('/api/health')
+def health_check():
+    """Health check endpoint for Vercel"""
+    return {'status': 'ok', 'message': 'Flask app is running'}
+
 @app.route('/sports')
 def sports():
-    articles = get_news('sports')
-    articles_cache['sports'] = articles
-    case = {
-        'articles': articles
-    }
-    return render_template('sports.html',cases = case)
+    try:
+        articles = get_news('sports')
+        articles_cache['sports'] = articles
+        case = {
+            'articles': articles
+        }
+        return render_template('sports.html',cases = case)
+    except Exception as e:
+        print(f"Error in sports route: {e}")
+        return render_template('sports.html', cases={'articles': []})
 
 @app.route('/business')
 def business():
-    articles = get_news('business')
-    articles_cache['business'] = articles
-    case = {
-        'articles': articles
-    }
-    return render_template('business.html',cases = case)
+    try:
+        articles = get_news('business')
+        articles_cache['business'] = articles
+        case = {
+            'articles': articles
+        }
+        return render_template('business.html',cases = case)
+    except Exception as e:
+        print(f"Error in business route: {e}")
+        return render_template('business.html', cases={'articles': []})
 
 @app.route('/technology')
 def technology():
-    articles = get_news('technology')
-    articles_cache['technology'] = articles
-    case = {
-        'articles': articles
-    }
-    return render_template('tech.html',cases = case)
+    try:
+        articles = get_news('technology')
+        articles_cache['technology'] = articles
+        case = {
+            'articles': articles
+        }
+        return render_template('tech.html',cases = case)
+    except Exception as e:
+        print(f"Error in technology route: {e}")
+        return render_template('tech.html', cases={'articles': []})
 
 @app.route('/science')
 def science():
-    articles = get_news('science')
-    articles_cache['science'] = articles
-    case = {
-        'articles': articles
-    }
-    return render_template('science.html',cases = case)
+    try:
+        articles = get_news('science')
+        articles_cache['science'] = articles
+        case = {
+            'articles': articles
+        }
+        return render_template('science.html',cases = case)
+    except Exception as e:
+        print(f"Error in science route: {e}")
+        return render_template('science.html', cases={'articles': []})
 
 @app.route('/health')
 def health():
-    articles = get_news('health')
-    articles_cache['health'] = articles
-    case = {
-        'articles': articles
-    }
-    return render_template('health.html',cases = case)
+    try:
+        articles = get_news('health')
+        articles_cache['health'] = articles
+        case = {
+            'articles': articles
+        }
+        return render_template('health.html',cases = case)
+    except Exception as e:
+        print(f"Error in health route: {e}")
+        return render_template('health.html', cases={'articles': []})
 
 @app.route('/article/<category>/<int:article_id>')
 def article_detail(category, article_id):

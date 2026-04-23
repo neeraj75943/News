@@ -17,6 +17,15 @@
         <div class="card-meta">
           <span class="source-badge">📰 {{news.source_name}}</span>
           <span class="date-badge">📅 {{news.pubDate}}</span>
+          {% if news.sentiment %}
+            {% if news.sentiment == 'positive' %}
+              <span class="sentiment-badge sentiment-positive">😊 Positive</span>
+            {% elif news.sentiment == 'negative' %}
+              <span class="sentiment-badge sentiment-negative">😞 Negative</span>
+            {% else %}
+              <span class="sentiment-badge sentiment-neutral">😐 Neutral</span>
+            {% endif %}
+          {% endif %}
         </div>
         <p class="card-description">
           {% if news.description and news.description|length > 150 %}
@@ -101,13 +110,33 @@
   }
 
   .source-badge,
-  .date-badge {
+  .date-badge,
+  .sentiment-badge {
     font-size: 0.8em;
-    color: #667eea;
     font-weight: 600;
-    background: #f0f4ff;
     padding: 4px 10px;
     border-radius: 20px;
+  }
+
+  .source-badge,
+  .date-badge {
+    color: #667eea;
+    background: #f0f4ff;
+  }
+
+  .sentiment-positive {
+    color: #27ae60;
+    background: #d4edda;
+  }
+
+  .sentiment-negative {
+    color: #e74c3c;
+    background: #f8d7da;
+  }
+
+  .sentiment-neutral {
+    color: #95a5a6;
+    background: #e9ecef;
   }
 
   .card-description {

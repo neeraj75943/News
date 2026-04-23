@@ -1,29 +1,71 @@
 from flask import Flask, render_template, request, session
 import requests
+from textblob import TextBlob
+from nltk.sentiment import SentimentIntensityAnalyzer
+import nltk
 
+# Download required NLTK data
+try:
+    nltk.data.find('sentiment/vader_lexicon')
+except LookupError:
+    nltk.download('vader_lexicon')
 
 app = Flask(__name__)
 app.secret_key = 'secret123'
+sia = SentimentIntensityAnalyzer()
 
 # Global storage for articles by category
 articles_cache = {}
 API_KEY = 'pub_adafdf32f2444525b9772637f7776d0d'  # Get free key at https://newsdata.io/
 
+def get_sentiment(text):
+    """Analyze sentiment of text using VADER - returns positive/negative/neutral"""
+    if not text or len(text.strip()) == 0:
+        return {'compound': 0, 'sentiment': 'neutral', 'score': 0}
+    
+    try:
+        # Use VADER for sentiment analysis
+        scores = sia.polarity_scores(text)
+        compound = scores['compound']
+        
+        # Classify sentiment based on compound score
+        if compound >= 0.05:
+            sentiment = 'positive'
+        elif compound <= -0.05:
+            sentiment = 'negative'
+        else:
+            sentiment = 'neutral'
+        
+        return {
+            'compound': round(compound, 2),
+            'sentiment': sentiment,
+            'score': scores
+        }
+    except Exception as e:
+        print(f"Error in sentiment analysis: {e}")
+        return {'compound': 0, 'sentiment': 'neutral', 'score': 0}
+
 def format_articles(articles):
-    """Transform Newsdata.io articles to expected format"""
+    """Transform Newsdata.io articles to expected format with NLP sentiment analysis"""
     if not articles or not isinstance(articles, list):
         return []
     
     formatted = []
     for article in articles:
         if isinstance(article, dict) and article.get('title'):  # Skip articles without title
+            # Combine title and description for sentiment analysis
+            text_to_analyze = (article.get('title', '') + ' ' + article.get('description', '')).strip()
+            sentiment_data = get_sentiment(text_to_analyze)
+            
             formatted.append({
                 'title': article.get('title', 'No Title'),
                 'description': article.get('description', 'No Description'),
                 'source_name': article.get('source_name', 'Unknown Source'),
                 'pubDate': article.get('pubDate', 'Unknown Date'),
                 'image_url': article.get('image_url', ''),
-                'link': article.get('link', '#')
+                'link': article.get('link', '#'),
+                'sentiment': sentiment_data['sentiment'],
+                'sentiment_score': sentiment_data['compound']
             })
     return formatted
 

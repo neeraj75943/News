@@ -15,6 +15,18 @@
           <span class="meta-label">Published:</span>
           <span class="meta-value">📅 {{ article.pubDate }}</span>
         </div>
+        {% if article.sentiment %}
+        <div class="meta-item">
+          <span class="meta-label">Sentiment:</span>
+          {% if article.sentiment == 'positive' %}
+            <span class="meta-value sentiment-positive">😊 Positive</span>
+          {% elif article.sentiment == 'negative' %}
+            <span class="meta-value sentiment-negative">😞 Negative</span>
+          {% else %}
+            <span class="meta-value sentiment-neutral">😐 Neutral</span>
+          {% endif %}
+        </div>
+        {% endif %}
       </div>
     </div>
 
@@ -248,6 +260,30 @@
     .meta-item {
       width: 100%;
     }
+  }
+
+  .sentiment-positive {
+    color: #27ae60;
+    background: #d4edda;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .sentiment-negative {
+    color: #e74c3c;
+    background: #f8d7da;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .sentiment-neutral {
+    color: #95a5a6;
+    background: #e9ecef;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
   }
 </style>
 {% endblock body %}
